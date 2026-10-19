@@ -1,10 +1,7 @@
 package org.example.bank.system.model.model.model;
 
 import org.example.bank.system.exceptions.SaldoInsuficienteException;
-import org.example.bank.system.model.Cliente;
-import org.example.bank.system.model.Conta;
-import org.example.bank.system.model.ContaCorrente;
-import org.example.bank.system.model.ContaPoupanca;
+import org.example.bank.system.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -203,4 +200,46 @@ public class ContaTest {
                 new BigDecimal("1010.00").compareTo(conta.getSaldo())
         );
     }
+
+    @Test
+    void deveRegistrarSaqueNoHistoricoDaConta() {
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678901",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaPoupanca(
+                1L,
+                cliente,
+                new BigDecimal("0.05")
+        );
+
+        // Preparamos a conta com R$ 500,00.
+        Deposito deposito = new Deposito(
+                new BigDecimal("500.00"),
+                conta
+        );
+
+        deposito.executar();
+
+        // Realizamos um saque de R$ 100,00.
+        Saque saque = new Saque(
+                new BigDecimal("100.00"),
+                conta
+        );
+
+        saque.executar();
+
+        // O saldo final deve ser R$ 400,00.
+        assertEquals(0, new BigDecimal("400.00").compareTo(conta.getSaldo()));
+
+        // O histórico deve conter o depósito e o saque.
+        assertEquals(2, conta.getTransacoes().size());
+        assertSame(saque, conta.getTransacoes().get(1));
+
+    }
+
+
 }

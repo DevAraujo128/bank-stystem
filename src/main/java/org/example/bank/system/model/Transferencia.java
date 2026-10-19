@@ -9,9 +9,9 @@ public class Transferencia extends Transacao {
     private Conta contaDestino;
 
     public Transferencia(
-            BigDecimal valor,
             Conta contaOrigem,
-            Conta contaDestino
+            Conta contaDestino,
+            BigDecimal valor
     ) {
         super(valor);
         this.contaOrigem = contaOrigem;

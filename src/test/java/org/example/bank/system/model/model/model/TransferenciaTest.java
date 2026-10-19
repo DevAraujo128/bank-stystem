@@ -2,6 +2,7 @@ package org.example.bank.system.model.model.model;
 
 import org.example.bank.system.exceptions.SaldoInsuficienteException;
 import org.example.bank.system.exceptions.TransferenciaInvalidaException;
+import org.example.bank.system.exceptions.ValorInvalidoException;
 import org.example.bank.system.model.*;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,6 @@ public class TransferenciaTest {
 
     @Test
     void deveRealizarTransferenciaEntreContas() {
-        // Criando o cliente de origem
         Cliente joao = new Cliente(
                 1L,
                 "João Pedro",
@@ -47,9 +47,9 @@ public class TransferenciaTest {
 
         // Criando a transferência
         Transferencia transferencia = new Transferencia(
-                new BigDecimal("300.00"),
                 contaJoao,
-                contaMaria
+                contaMaria,
+                new BigDecimal("300.00")
         );
 
         // Executando a transferência
@@ -101,9 +101,9 @@ public class TransferenciaTest {
 
         // Cria a transferência de R$ 300,00.
         Transferencia transferencia = new Transferencia(
-                new BigDecimal("300.00"),
                 contaJoao,
-                contaMaria
+                contaMaria,
+                new BigDecimal("300.00")
         );
 
         // Executa a transferência.
@@ -136,14 +136,14 @@ public class TransferenciaTest {
         contaJoao.depositar(new BigDecimal("1000.00"));
 
         Transferencia transferencia = new Transferencia(
-                new BigDecimal("300.00"),
                 contaJoao,
-                contaJoao
+                contaJoao,
+                new BigDecimal("300.00")
         );
 
         assertThrows(
                 TransferenciaInvalidaException.class,
-                () -> transferencia.executar()
+                transferencia::executar
         );
 
         assertEquals(
@@ -185,15 +185,15 @@ public class TransferenciaTest {
 
         // João tenta transferir R$ 300,00 para Maria.
         Transferencia transferencia = new Transferencia(
-                new BigDecimal("300.00"),
                 contaJoao,
-                contaMaria
+                contaMaria,
+                new BigDecimal("300.00")
         );
 
         // A transferência deve ser impedida.
         assertThrows(
                 SaldoInsuficienteException.class,
-                () -> transferencia.executar()
+                transferencia::executar
         );
 
         // O saldo do João deve continuar em R$ 100,00.
@@ -211,6 +211,128 @@ public class TransferenciaTest {
         // A transferência inválida não deve entrar no histórico.
         assertTrue(contaJoao.getTransacoes().isEmpty());
         assertTrue(contaMaria.getTransacoes().isEmpty());
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorNegativo() {
+        Cliente joao = new Cliente(
+                1L,
+                "João",
+                "12345678901",
+                "joao@email.com"
+        );
+
+        Cliente maria = new Cliente(
+                2L,
+                "Maria",
+                "98765432100",
+                "maria@email.com"
+        );
+
+        Conta origem = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        Conta destino = new ContaPoupanca(
+                1002L,
+                maria,
+                new BigDecimal("0.01")
+        );
+
+        // Realiza um depósito de R$ 500,00 e registra no histórico.
+        Deposito deposito = new Deposito(
+                new BigDecimal("500.00"),
+                origem
+        );
+
+        deposito.executar();
+
+        // Cria uma transferência com valor negativo.
+        Transferencia transferencia = new Transferencia(
+                origem,
+                destino,
+                new BigDecimal("-100.00")
+        );
+
+        // Verifica se a transferência lança a exceção esperada.
+        assertThrows(
+                ValorInvalidoException.class,
+                transferencia::executar
+        );
+
+        // Verifica se os saldos continuam inalterados.
+        assertEquals(
+                0,
+                origem.getSaldo().compareTo(new BigDecimal("500.00"))
+        );
+
+        assertEquals(
+                0,
+                destino.getSaldo().compareTo(BigDecimal.ZERO)
+        );
+
+        // Verifica se a transferência inválida não foi registrada.
+        assertEquals(1, origem.getTransacoes().size());
+        assertEquals(0, destino.getTransacoes().size());
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorZero() {
+        Cliente joao = new Cliente(
+                1L,
+                "João",
+                "12345678901",
+                "joao@email.com"
+        );
+
+        Cliente maria = new Cliente(
+                2L,
+                "Maria",
+                "98765432100",
+                "maria@email.com"
+        );
+
+        Conta origem = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        Conta destino = new ContaPoupanca(
+                1002L,
+                maria,
+                new BigDecimal("0.01")
+        );
+
+        // João deposita R$ 500.00
+        Deposito deposito = new Deposito(
+                new BigDecimal("500.00"),
+                origem
+        );
+
+        deposito.executar();
+
+        // Transferencia com valor zero.
+        Transferencia transferencia = new Transferencia(
+                origem,
+                destino,
+                BigDecimal.ZERO
+        );
+
+        // Esperamos que o sistema rejeite a transferência.
+        assertThrows(
+                ValorInvalidoException.class,
+                transferencia::executar
+        );
+
+        assertEquals(0, origem.getSaldo().compareTo(new BigDecimal("500.00")));
+        assertEquals(0, destino.getSaldo().compareTo(BigDecimal.ZERO));
+
+        // Somente o depósito deve estar no histórico de João.
+        assertEquals(1, origem.getTransacoes().size());
+        assertEquals(0, destino.getTransacoes().size());
     }
 
 }

@@ -118,9 +118,9 @@ public class Banco {
         }
 
         Transferencia transferencia = new Transferencia(
-                valor,
                 contaOrigem,
-                contaDestino
+                contaDestino,
+                valor
         );
 
         transferencia.executar();

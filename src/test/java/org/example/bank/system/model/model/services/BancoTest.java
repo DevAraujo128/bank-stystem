@@ -432,4 +432,141 @@ public class BancoTest {
         assertEquals(0, contaJoao.getTransacoes().size());
 
     }
+
+    @Test
+    void deveImpedirSaqueComValorZeroPeloBanco() {
+        Banco banco = new Banco();
+
+        Cliente joao = new Cliente(
+                1L,
+                "João Pedro",
+                "38604467840",
+                "joaodev@gmail.com"
+        );
+
+        banco.cadastrarCliente(joao);
+
+        Conta contaJoao = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        banco.cadastrarConta(contaJoao);
+
+        banco.realizarDeposito(1001L, new BigDecimal("500.00"));
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarSaque(
+                        1001L,
+                        new BigDecimal("0.00")
+                )
+        );
+
+        assertEquals(0, new BigDecimal("500.00").compareTo(contaJoao.getSaldo()));
+
+        assertEquals(1, contaJoao.getTransacoes().size());
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorZeroPeloBanco() {
+        Banco banco = new Banco();
+
+        Cliente joao = new Cliente(
+                1L,
+                "João Pedro",
+                "38604467840",
+                "joaodev@gmail.com"
+        );
+
+        Cliente maria = new Cliente(
+                2L,
+                "Maria Eduarda",
+                "12345678909",
+                "maria@gmail.com"
+        );
+
+        banco.cadastrarCliente(joao);
+        banco.cadastrarCliente(maria);
+
+        Conta contaJoao = new ContaPoupanca(
+                1001L, joao, new BigDecimal("0.01")
+        );
+
+        Conta contaMaria = new ContaPoupanca(
+                1002L, maria, new BigDecimal("0.01")
+        );
+
+        banco.cadastrarConta(contaJoao);
+        banco.cadastrarConta(contaMaria);
+
+        banco.realizarDeposito(1001L, new BigDecimal("500.00"));
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarTransferencia(
+                        1001L,
+                        1002L,
+                        new BigDecimal("0.00")
+                )
+        );
+
+        assertEquals(0, new BigDecimal("500.00").compareTo(contaJoao.getSaldo()));
+
+        assertEquals(0, BigDecimal.ZERO.compareTo(contaMaria.getSaldo()));
+
+        assertEquals(1, contaJoao.getTransacoes().size());
+        assertEquals(0, contaMaria.getTransacoes().size());
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorNegativoPeloBanco() {
+        Banco banco = new Banco();
+
+        Cliente joao = new Cliente(
+                1L,
+                "João Pedro",
+                "38604467840",
+                "joaodev@gmail.com"
+        );
+
+        Cliente maria = new Cliente(
+                2L,
+                "Maria Eduarda",
+                "12345678909",
+                "maria@gmail.com"
+        );
+
+        banco.cadastrarCliente(joao);
+        banco.cadastrarCliente(maria);
+
+        Conta contaJoao = new ContaPoupanca(
+                1001L, joao, new BigDecimal("0.01")
+        );
+
+        Conta contaMaria = new ContaPoupanca(
+                1002L, maria, new BigDecimal("0.01")
+        );
+
+        banco.cadastrarConta(contaJoao);
+        banco.cadastrarConta(contaMaria);
+
+        banco.realizarDeposito(1001L, new BigDecimal("500.00"));
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarTransferencia(
+                        1001L,
+                        1002L,
+                        new BigDecimal("-100.00")
+                )
+        );
+
+        assertEquals(0, new BigDecimal("500.00").compareTo(contaJoao.getSaldo()));
+        assertEquals(0, BigDecimal.ZERO.compareTo(contaMaria.getSaldo()));
+
+        assertEquals(1, contaJoao.getTransacoes().size());
+        assertEquals(0, contaMaria.getTransacoes().size());
+    }
 }
