@@ -15,7 +15,7 @@ public class ContaPoupanca extends Conta {
     ) {
         super(numero, titular);
 
-        if (rendimento == null || rendimento.compareTo(BigDecimal.ZERO) <= 0) {
+        if (rendimento == null || rendimento.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException(
                     "Rendimento não pode ser negativo."
             );

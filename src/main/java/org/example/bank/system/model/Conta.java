@@ -79,7 +79,7 @@ public abstract class Conta {
     }
 
     public List<Transacao> getTransacoes() {
-        return transacoes;
+        return List.copyOf(transacoes);
     }
 
 }

@@ -17,7 +17,9 @@ public class Rendimento extends Transacao {
 
     @Override
     public void executar() {
-        conta.depositar(getValor());
+        if (getValor().compareTo(BigDecimal.ZERO) > 0) {
+            conta.depositar(getValor());
+        }
         conta.adicionarTransacao(this);
     }
 

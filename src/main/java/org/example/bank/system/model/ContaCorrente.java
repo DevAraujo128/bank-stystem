@@ -1,6 +1,7 @@
 package org.example.bank.system.model;
 
 import org.example.bank.system.exceptions.SaldoInsuficienteException;
+import org.example.bank.system.exceptions.ValorInvalidoException;
 
 import java.math.BigDecimal;
 
@@ -31,7 +32,7 @@ public class ContaCorrente extends Conta {
     @Override
     public void sacar(BigDecimal valor) {
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(
+            throw new ValorInvalidoException(
                     "Valor do saque deve ser maior que zero."
             );
         }
