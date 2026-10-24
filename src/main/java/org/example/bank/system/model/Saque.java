@@ -17,8 +17,16 @@ public class Saque extends Transacao {
 
     @Override
     public void executar() {
+        if(isExecutada()) {
+            throw new IllegalStateException(
+                    "Esta transação já foi executada."
+            );
+        }
+
         conta.sacar(getValor());
         conta.adicionarTransacao(this);
+
+        marcarComoExecutada();
     }
 
     @Override

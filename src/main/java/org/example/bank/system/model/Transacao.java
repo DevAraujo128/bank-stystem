@@ -7,10 +7,12 @@ public abstract class Transacao {
 
     private BigDecimal valor;
     private LocalDateTime data;
+    private boolean executada;
 
     public Transacao(BigDecimal valor) {
         this.valor = valor;
         this.data = LocalDateTime.now();
+        this.executada = false;
     }
 
     public BigDecimal getValor() {
@@ -19,6 +21,14 @@ public abstract class Transacao {
 
     public LocalDateTime getData() {
         return data;
+    }
+
+    public boolean isExecutada() {
+        return executada;
+    }
+
+    protected void marcarComoExecutada() {
+        this.executada = true;
     }
 
     public abstract void executar();

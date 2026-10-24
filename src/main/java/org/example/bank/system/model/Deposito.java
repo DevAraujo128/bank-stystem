@@ -16,8 +16,16 @@ public class Deposito extends Transacao {
 
     @Override
     public void executar() {
+        if(isExecutada()) {
+            throw new IllegalStateException(
+                "Esta transação já foi executada."
+            );
+        }
+
         conta.depositar(getValor());
         conta.adicionarTransacao(this);
+
+        marcarComoExecutada();
     }
 
     @Override

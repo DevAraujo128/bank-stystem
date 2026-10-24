@@ -116,6 +116,10 @@ public class TransferenciaTest {
         // Verifica se as duas contas registraram a mesma transferência.
         assertSame(transferencia, contaJoao.getTransacoes().get(0));
         assertSame(transferencia, contaMaria.getTransacoes().get(0));
+
+        assertEquals(0, new BigDecimal("700.00").compareTo(contaJoao.getSaldo()));
+        assertEquals(0, new BigDecimal("300.00").compareTo(contaMaria.getSaldo()));
+
     }
 
     @Test
@@ -180,8 +184,13 @@ public class TransferenciaTest {
                 new BigDecimal("0.01")
         );
 
-        // João possui apenas R$ 100,00.
-        contaJoao.depositar(new BigDecimal("100.00"));
+        // João recebe um depósito de R$ 100,00.
+        Deposito deposito = new Deposito(
+                new BigDecimal("100.00"),
+                contaJoao
+        );
+
+        deposito.executar();
 
         // João tenta transferir R$ 300,00 para Maria.
         Transferencia transferencia = new Transferencia(
@@ -190,13 +199,13 @@ public class TransferenciaTest {
                 new BigDecimal("300.00")
         );
 
-        // A transferência deve ser impedida.
+        // A transferência deve ser impedida por falta de saldo.
         assertThrows(
                 SaldoInsuficienteException.class,
                 transferencia::executar
         );
 
-        // O saldo do João deve continuar em R$ 100,00.
+        // O saldo de João deve continuar em R$ 100,00.
         assertEquals(
                 0,
                 new BigDecimal("100.00").compareTo(contaJoao.getSaldo())
@@ -208,8 +217,12 @@ public class TransferenciaTest {
                 BigDecimal.ZERO.compareTo(contaMaria.getSaldo())
         );
 
-        // A transferência inválida não deve entrar no histórico.
-        assertTrue(contaJoao.getTransacoes().isEmpty());
+        // O depósito deve continuar registrado no histórico de João.
+        assertEquals(1, contaJoao.getTransacoes().size());
+        assertSame(deposito, contaJoao.getTransacoes().get(0));
+
+        // A transferência recusada não deve entrar no histórico de nenhuma conta.
+        assertFalse(contaJoao.getTransacoes().contains(transferencia));
         assertTrue(contaMaria.getTransacoes().isEmpty());
     }
 
@@ -335,4 +348,136 @@ public class TransferenciaTest {
         assertEquals(0, destino.getTransacoes().size());
     }
 
+    @Test
+    void deveImpedirTransferenciaQuandoContaDestinoForNula() {
+        Cliente joao = new Cliente(
+                1L,
+                "João",
+                "12345678901",
+                "joao@email.com"
+        );
+
+        ContaPoupanca contaOrigem = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        contaOrigem.depositar(new BigDecimal("500.00"));
+
+        Transferencia transferencia = new Transferencia(
+                contaOrigem,
+                null,
+                new BigDecimal("100.00")
+        );
+
+        assertThrows(
+                TransferenciaInvalidaException.class,
+                transferencia::executar
+        );
+
+        assertEquals(0, new BigDecimal("500.00").compareTo(contaOrigem.getSaldo()));
+
+        assertEquals(0, contaOrigem.getTransacoes().size());
+    }
+
+    @Test
+    void deveImpedirTransferenciaQuandoContaOrigemForNula() {
+        Cliente joao = new Cliente(
+                1L,
+                "João",
+                "12345678901",
+                "joao@email.com"
+        );
+
+        ContaPoupanca contaDestino = new ContaPoupanca(
+                1002L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        Deposito deposito = new Deposito(
+                new BigDecimal("200.00"),
+                contaDestino
+        );
+
+        deposito.executar();
+
+        Transferencia transferencia = new Transferencia(
+                null,
+                contaDestino,
+                new BigDecimal("100.00")
+        );
+
+        assertThrows(
+                TransferenciaInvalidaException.class,
+                transferencia::executar
+        );
+
+        assertEquals(0, new BigDecimal("200.00").compareTo(contaDestino.getSaldo()));
+
+        assertEquals(1, contaDestino.getTransacoes().size());
+    }
+
+    @Test
+    void deveImpedirExecucaoDuplicadaDaTransferencia() {
+        Cliente joao = new Cliente(
+                1L,
+                "João Pedro",
+                "38604467840",
+                "joaodev@gmail.com"
+        );
+
+        Cliente maria = new Cliente(
+                2L,
+                "Maria Eduarda",
+                "06234582930",
+                "maria123@gmail.com"
+        );
+
+        Conta contaJoao = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        Conta contaMaria = new ContaPoupanca(
+                1002L,
+                maria,
+                new BigDecimal("0.01")
+        );
+
+        Deposito deposito = new Deposito(
+                new BigDecimal("1000.00"),
+                contaJoao
+        );
+        deposito.executar();
+
+        Transferencia transferencia = new Transferencia(
+                contaJoao,
+                contaMaria,
+                new BigDecimal("300.00")
+        );
+
+        transferencia.executar();
+
+        assertThrows(
+                IllegalStateException.class,
+                transferencia::executar
+        );
+
+        // Os saldos não devem mudar na segunda execução.
+        assertEquals(0, new BigDecimal("700.00").compareTo(contaJoao.getSaldo()));
+        assertEquals(0, new BigDecimal("300.00").compareTo(contaMaria.getSaldo()));
+
+        // A origem contém o depósito e uma transferência.
+        assertEquals(2, contaJoao.getTransacoes().size());
+        assertSame(transferencia, contaJoao.getTransacoes().get(1));
+
+        // O destino contém somente a transferência.
+        assertEquals(1, contaMaria.getTransacoes().size());
+        assertSame(transferencia, contaMaria.getTransacoes().get(0));
+
+        assertTrue(transferencia.isExecutada());
+    }
 }

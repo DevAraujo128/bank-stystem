@@ -28,6 +28,18 @@ public class Transferencia extends Transacao {
 
     @Override
     public void executar() {
+        if(isExecutada()) {
+            throw new IllegalStateException(
+                    "Esta transação já foi executada."
+            );
+        }
+
+        if(contaOrigem == null || contaDestino == null) {
+            throw new TransferenciaInvalidaException(
+                    "As contas de origem e destino são obrigatorias."
+            );
+        }
+
         if (contaOrigem.equals(contaDestino)) {
             throw new TransferenciaInvalidaException(
                     "A conta de origem e destino não podem ser iguais."
@@ -39,6 +51,8 @@ public class Transferencia extends Transacao {
 
         contaOrigem.adicionarTransacao(this);
         contaDestino.adicionarTransacao(this);
+
+        marcarComoExecutada();
     }
 
     @Override
