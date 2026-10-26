@@ -47,4 +47,12 @@ public class DepositoTest {
         assertSame(deposito, conta.getTransacoes().get(0));
         assertTrue(deposito.isExecutada());
     }
+
+    @Test
+    void deveImpedirDepositoSemConta() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Deposito(new BigDecimal("100.00"), null)
+        );
+    }
 }

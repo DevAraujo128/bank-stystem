@@ -7,6 +7,12 @@ public class Deposito extends Transacao {
 
     public Deposito(BigDecimal valor, Conta conta) {
         super(valor);
+
+        if(conta == null) {
+            throw new IllegalArgumentException(
+                    "A conta para realizar o depósito é obrigatória."
+            );
+        }
         this.conta = conta;
     }
 

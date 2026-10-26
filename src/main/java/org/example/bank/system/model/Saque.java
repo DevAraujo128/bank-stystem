@@ -7,8 +7,13 @@ public class Saque extends Transacao {
 
     public Saque(BigDecimal valor, Conta conta) {
         super(valor);
-        this.conta = conta;
 
+        if(conta == null) {
+            throw new IllegalArgumentException(
+                    "A conta para realizar o saque é obrigatória."
+            );
+        }
+        this.conta = conta;
     }
 
     public Conta getConta() {

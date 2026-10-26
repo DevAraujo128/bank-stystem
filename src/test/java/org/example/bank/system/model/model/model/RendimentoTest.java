@@ -1,8 +1,8 @@
 package org.example.bank.system.model.model.model;
 
+import org.example.bank.system.exceptions.ValorInvalidoException;
 import org.example.bank.system.model.Cliente;
 import org.example.bank.system.model.ContaPoupanca;
-import org.example.bank.system.model.Deposito;
 import org.example.bank.system.model.Rendimento;
 import org.junit.jupiter.api.Test;
 
@@ -113,6 +113,27 @@ public class RendimentoTest {
                         new BigDecimal("-100.00"),
                         conta
                 )
+        );
+    }
+
+    @Test
+    void deveImpedirRendimentoComValorNulo() {
+        Cliente joao = new Cliente(
+                1L,
+                "João",
+                "3113123131",
+                "joaodev@gmail.com"
+        );
+
+        ContaPoupanca conta = new ContaPoupanca(
+                1001L,
+                joao,
+                new BigDecimal("0.01")
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Rendimento(null, conta)
         );
     }
 

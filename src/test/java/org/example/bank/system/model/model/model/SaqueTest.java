@@ -50,4 +50,15 @@ public class SaqueTest {
         assertSame(saque, conta.getTransacoes().get(1));
         assertTrue(saque.isExecutada());
     }
+
+    @Test
+    void deveImpedirSaqueSemConta() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Saque(
+                        new BigDecimal("100.00"),
+                        null
+                )
+        );
+    }
 }
