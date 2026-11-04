@@ -569,4 +569,22 @@ public class BancoTest {
         assertEquals(1, contaJoao.getTransacoes().size());
         assertEquals(0, contaMaria.getTransacoes().size());
     }
+
+    @Test
+    void deveRetornarNullAoBuscarClienteInexistente() {
+        Banco banco = new Banco();
+
+        Cliente resultado = banco.buscarClientePorCpf("12345678900");
+
+        assertNull(resultado);
+    }
+
+    @Test
+    void deveRetornarNullAoBuscarContaInexistente() {
+        Banco banco = new Banco();
+
+        Conta resultado = banco.buscarContaPorNumero(9999L);
+
+        assertNull(resultado);
+    }
 }
