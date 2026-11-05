@@ -21,6 +21,12 @@ public class Banco {
 
     public void cadastrarCliente(Cliente cliente) {
 
+        if (cliente == null) {
+            throw new IllegalArgumentException(
+                "O cliente não pode ser nulo"
+            );
+        }
+
         if (buscarClientePorCpf(cliente.getCpf()) != null) {
             throw new ClienteDuplicadoException(
                     "Já existe um cliente cadastrado com este CPF."
@@ -31,6 +37,12 @@ public class Banco {
     }
 
     public Cliente buscarClientePorCpf(String cpf) {
+
+        if (cpf == null || cpf.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O CPF deve ser informado."
+            );
+        }
 
         for (Cliente cliente : clientes) {
 
@@ -44,6 +56,12 @@ public class Banco {
 
     public void cadastrarConta(Conta conta) {
 
+        if (conta == null) {
+            throw new IllegalArgumentException(
+                    "Conta não pode ser nula"
+            );
+        }
+
         if (buscarContaPorNumero(conta.getNumero()) != null) {
             throw new ContaDuplicadaException(
                     "Já existe uma conta com este número."
@@ -54,6 +72,12 @@ public class Banco {
     }
 
     public Conta buscarContaPorNumero(Long numero) {
+
+        if (numero == null) {
+            throw new IllegalArgumentException(
+                    "O número da conta deve ser informado."
+            );
+        }
 
         for (Conta conta : contas) {
 

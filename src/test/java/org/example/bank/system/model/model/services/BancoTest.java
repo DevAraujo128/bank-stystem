@@ -587,4 +587,74 @@ public class BancoTest {
 
         assertNull(resultado);
     }
+
+    @Test
+    void deveImpedirCadastroDeClienteNulo() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.cadastrarCliente(null)
+        );
+    }
+
+    @Test
+    void deveImpedirCadastroDeContaNula() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.cadastrarConta(null)
+        );
+    }
+
+    @Test
+    void deveImpedirBuscaComCpfNulo() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.buscarClientePorCpf(null)
+        );
+    }
+
+    @Test
+    void deveImpedirBuscaComCpfVazio() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.buscarClientePorCpf("   ")
+        );
+    }
+
+    @Test
+    void deveImpedirBuscaComNumeroDeContaNulo() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.cadastrarConta(null)
+        );
+    }
+
+    @Test
+    void deveImpedirDepositoComNumeroDeContaNulo() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.realizarDeposito(null, new BigDecimal("100.00"))
+        );
+    }
+
+    @Test
+    void deveImpedirSaqueComNumeroDeContaNulo() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.realizarSaque(null, new BigDecimal("50.00"))
+        );
+    }
 }
