@@ -657,4 +657,296 @@ public class BancoTest {
                 () -> banco.realizarSaque(null, new BigDecimal("50.00"))
         );
     }
+
+    @Test
+    void deveImpedirTransferenciaComContaOrigemNula() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.realizarTransferencia(
+                  null,
+                  2002L,
+                  new BigDecimal("50.00")
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirTransferenciaComContaDestinoNula() {
+        Banco banco = new Banco();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> banco.realizarTransferencia(
+                        2002L,
+                        null,
+                        new BigDecimal("50.00")
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirDepositoComValorNulo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(conta);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarDeposito(1001L, null)
+        );
+    }
+
+    @Test
+    void deveImpedirSaqueComValorNulo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(conta);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarSaque(1001L, null)
+        );
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorNulo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joaodev@gmail.com"
+        );
+
+        Conta origem = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        Conta destino = new ContaCorrente(
+                1002L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(origem);
+        banco.cadastrarConta(destino);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarTransferencia(
+                        1001L,
+                        1002L,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorZero() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta origem = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        Conta destino = new ContaCorrente(
+                1002L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(origem);
+        banco.cadastrarConta(destino);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarTransferencia(
+                        1001L,
+                        1002L,
+                        BigDecimal.ZERO
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirTransferenciaComValorNegativo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta origem = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        Conta destino = new ContaCorrente(
+                1002L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(origem);
+        banco.cadastrarConta(destino);
+
+        origem.depositar(new BigDecimal("500.00"));
+        destino.depositar(new BigDecimal("500.00"));
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarTransferencia(
+                        1001L,
+                        1002L,
+                        new BigDecimal("-50.00")
+                )
+        );
+
+        assertEquals(
+                0,
+                new BigDecimal("500.00").compareTo(origem.getSaldo())
+        );
+
+        assertEquals(
+                0,
+                new BigDecimal("500.00").compareTo(destino.getSaldo())
+        );
+    }
+
+    @Test
+    void deveImpedirSaqueComValorNegativo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        conta.depositar(new BigDecimal("100.00"));
+        banco.cadastrarConta(conta);
+
+        assertThrows(
+            ValorInvalidoException.class,
+                () -> banco.realizarSaque(
+                        1001L,
+                        new BigDecimal("-50.00")
+                )
+        );
+
+        assertEquals(0, new BigDecimal("100.00").compareTo(conta.getSaldo()));
+    }
+
+    @Test
+    void deveImpedirDepositoComValorNegativo() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        banco.cadastrarConta(conta);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarDeposito(
+                        1001L,
+                        new BigDecimal("-50.00")
+                )
+        );
+
+        assertEquals(
+                0,
+                new BigDecimal("0.00").compareTo(conta.getSaldo())
+        );
+    }
+
+    @Test
+    void deveImpedirSaqueComValorZero() {
+        Banco banco = new Banco();
+
+        Cliente cliente = new Cliente(
+                1L,
+                "João",
+                "12345678900",
+                "joao@email.com"
+        );
+
+        Conta conta = new ContaCorrente(
+                1001L,
+                cliente,
+                new BigDecimal("500.00")
+        );
+
+        conta.depositar(new BigDecimal("100.00"));
+        banco.cadastrarConta(conta);
+
+        assertThrows(
+                ValorInvalidoException.class,
+                () -> banco.realizarSaque(
+                        1001L,
+                        BigDecimal.ZERO
+                )
+        );
+    }
 }
