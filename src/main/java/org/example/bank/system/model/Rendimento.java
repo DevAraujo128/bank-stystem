@@ -1,10 +1,8 @@
 package org.example.bank.system.model;
 
 import java.math.BigDecimal;
-import java.security.PrivilegedActionException;
 
 public class Rendimento extends Transacao {
-
     private ContaPoupanca conta;
 
     public Rendimento(BigDecimal valor, ContaPoupanca conta) {

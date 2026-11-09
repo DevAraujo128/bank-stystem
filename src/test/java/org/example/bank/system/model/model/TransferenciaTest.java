@@ -1,4 +1,4 @@
-package org.example.bank.system.model.model.model;
+package org.example.bank.system.model.model;
 
 import org.example.bank.system.exceptions.SaldoInsuficienteException;
 import org.example.bank.system.exceptions.TransferenciaInvalidaException;

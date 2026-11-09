@@ -1,13 +1,11 @@
-package org.example.bank.system.model.model.model;
+package org.example.bank.system.model.model;
 
-import org.example.bank.system.exceptions.ValorInvalidoException;
 import org.example.bank.system.model.Cliente;
 import org.example.bank.system.model.ContaPoupanca;
 import org.example.bank.system.model.Rendimento;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RendimentoTest {

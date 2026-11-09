@@ -1,6 +1,7 @@
 package org.example.bank.system.model;
 
 import org.example.bank.system.exceptions.ContaInvalidaException;
+import org.example.bank.system.exceptions.SaldoInsuficienteException;
 import org.example.bank.system.exceptions.ValorInvalidoException;
 
 import java.math.BigDecimal;
@@ -43,22 +44,28 @@ public abstract class Conta {
     }
 
     public void sacar(BigDecimal valor) {
-
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(
+            throw new ValorInvalidoException(
                     "Valor do saque deve ser maior que zero."
             );
         }
 
         if (saldo.compareTo(valor) < 0) {
-            throw new IllegalArgumentException(
+            throw new SaldoInsuficienteException(
                     "Saldo insuficiente."
             );
         }
+
         saldo = saldo.subtract(valor);
     }
 
     protected void alterarSaldo(BigDecimal novoSaldo) {
+        if (novoSaldo == null) {
+            throw new ValorInvalidoException(
+                    "O saldo da conta não pode ser nulo."
+            );
+        }
+
         this.saldo = novoSaldo;
     }
 
@@ -75,6 +82,12 @@ public abstract class Conta {
     }
 
     public void adicionarTransacao(Transacao transacao) {
+        if(transacao == null) {
+            throw new IllegalArgumentException(
+                    "A transação não pode ser nula."
+            );
+        }
+
         transacoes.add(transacao);
     }
 

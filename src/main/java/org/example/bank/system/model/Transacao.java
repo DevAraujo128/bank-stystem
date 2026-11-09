@@ -1,5 +1,7 @@
 package org.example.bank.system.model;
 
+import org.example.bank.system.exceptions.ValorInvalidoException;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -10,6 +12,12 @@ public abstract class Transacao {
     private boolean executada;
 
     public Transacao(BigDecimal valor) {
+        if (valor == null) {
+            throw new ValorInvalidoException(
+                    "O valor da transação não pode ser nulo."
+            );
+        }
+
         this.valor = valor;
         this.data = LocalDateTime.now();
         this.executada = false;

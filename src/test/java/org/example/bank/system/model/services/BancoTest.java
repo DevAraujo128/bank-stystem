@@ -1,4 +1,4 @@
-package org.example.bank.system.model.model.services;
+package org.example.bank.system.model.services;
 
 import org.example.bank.system.exceptions.*;
 import org.example.bank.system.model.Cliente;

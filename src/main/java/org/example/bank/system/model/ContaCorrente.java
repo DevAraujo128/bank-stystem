@@ -18,7 +18,7 @@ public class ContaCorrente extends Conta {
 
         if (limite == null || limite.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException(
-                    "Limite não pode ser negativo."
+                    "Limite deve ser informado e não pode ser negativo."
             );
         }
 

@@ -1,4 +1,4 @@
-package org.example.bank.system.model.model.model;
+package org.example.bank.system.model.model;
 
 import org.example.bank.system.exceptions.ClienteInvalidoException;
 import org.example.bank.system.model.Cliente;

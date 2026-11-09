@@ -42,7 +42,6 @@ public class ContaPoupanca extends Conta {
 
     @Override
     public void sacar(BigDecimal valor) {
-
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValorInvalidoException(
                     "Valor do saque deve ser maior que zero."
