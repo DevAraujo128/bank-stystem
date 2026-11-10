@@ -44,11 +44,7 @@ public abstract class Conta {
     }
 
     public void sacar(BigDecimal valor) {
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ValorInvalidoException(
-                    "Valor do saque deve ser maior que zero."
-            );
-        }
+        validarValorSaque(valor);
 
         if (saldo.compareTo(valor) < 0) {
             throw new SaldoInsuficienteException(
@@ -67,6 +63,14 @@ public abstract class Conta {
         }
 
         this.saldo = novoSaldo;
+    }
+
+    protected void validarValorSaque(BigDecimal valor) {
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValorInvalidoException(
+                    "O valor do saque deve ser maior que zero."
+            );
+        }
     }
 
     public Long getNumero() {

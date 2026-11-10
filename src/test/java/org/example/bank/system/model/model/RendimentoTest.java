@@ -1,5 +1,6 @@
 package org.example.bank.system.model.model;
 
+import org.example.bank.system.exceptions.ValorInvalidoException;
 import org.example.bank.system.model.Cliente;
 import org.example.bank.system.model.ContaPoupanca;
 import org.example.bank.system.model.Rendimento;
@@ -130,7 +131,7 @@ public class RendimentoTest {
         );
 
         assertThrows(
-                IllegalArgumentException.class,
+                ValorInvalidoException.class,
                 () -> new Rendimento(null, conta)
         );
     }

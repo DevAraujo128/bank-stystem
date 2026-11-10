@@ -35,11 +35,23 @@ public abstract class Transacao {
         return executada;
     }
 
-    protected void marcarComoExecutada() {
+    private void marcarComoExecutada() {
         this.executada = true;
     }
 
-    public abstract void executar();
+    public final void executar() {
+        if (executada) {
+            throw new IllegalStateException(
+                    "Esta transação já foi executada."
+            );
+        }
+
+        executarTransacao();
+        marcarComoExecutada();
+    }
+
+    protected abstract void executarTransacao();
+
 
     public abstract String getTipo();
 }

@@ -27,12 +27,7 @@ public class Transferencia extends Transacao {
     }
 
     @Override
-    public void executar() {
-        if(isExecutada()) {
-            throw new IllegalStateException(
-                    "Esta transação já foi executada."
-            );
-        }
+    protected void executarTransacao() {
 
         if(contaOrigem == null || contaDestino == null) {
             throw new TransferenciaInvalidaException(
@@ -51,8 +46,6 @@ public class Transferencia extends Transacao {
 
         contaOrigem.adicionarTransacao(this);
         contaDestino.adicionarTransacao(this);
-
-        marcarComoExecutada();
     }
 
     @Override
