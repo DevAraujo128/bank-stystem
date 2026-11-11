@@ -1,6 +1,7 @@
 package org.example.bank.system.services;
 
 import org.example.bank.system.exceptions.ClienteDuplicadoException;
+import org.example.bank.system.exceptions.ClienteInvalidoException;
 import org.example.bank.system.exceptions.ContaDuplicadaException;
 import org.example.bank.system.exceptions.ContaInvalidaException;
 import org.example.bank.system.model.*;
@@ -68,6 +69,20 @@ public class Banco {
             );
         }
 
+        Cliente titular = buscarClientePorCpf(conta.getTitular().getCpf());
+
+        if (titular == null) {
+            throw new ClienteInvalidoException(
+                    "O titular da conta deve estar cadastrado no banco."
+            );
+        }
+
+        if (titular != conta.getTitular()) {
+            throw new ClienteInvalidoException(
+                    "A conta deve usar o objeto do cliente cadastrado no banco."
+            );
+        }
+
         contas.add(conta);
     }
 
@@ -89,36 +104,36 @@ public class Banco {
         return null;
     }
 
+    private Conta buscarContaObrigatoria(Long numero, String mensagem) {
+        Conta conta = buscarContaPorNumero(numero);
+
+        if (conta == null) {
+            throw new ContaInvalidaException(mensagem);
+        }
+
+        return conta;
+    }
+
     // ==========================================
     // OPERAÇÕES BANCÁRIAS
     // ==========================================
 
     public void realizarDeposito(Long numeroConta, BigDecimal valor) {
-        Conta conta = buscarContaPorNumero(numeroConta);
+        Conta conta = buscarContaObrigatoria(
+                numeroConta,
+                "Conta não encontrada."
+        );
 
-        if (conta == null) {
-            throw new IllegalArgumentException(
-                    "Conta não encontrada."
-            );
-        }
-
-        Deposito deposito = new Deposito(valor, conta);
-
-        deposito.executar();
+        new Deposito(valor, conta).executar();
     }
 
     public void realizarSaque(Long numeroConta, BigDecimal valor){
-        Conta conta = buscarContaPorNumero(numeroConta);
+        Conta conta = buscarContaObrigatoria(
+                numeroConta,
+                "Conta não encontrada."
+        );
 
-        if (conta == null) {
-            throw new IllegalArgumentException(
-                    "Conta não encontrada."
-            );
-        }
-
-        Saque saque = new Saque(valor, conta);
-
-        saque.executar();
+        new Saque(valor, conta).executar();
     }
 
     public void realizarTransferencia(
@@ -126,30 +141,17 @@ public class Banco {
             Long numeroContaDestino,
             BigDecimal valor
     ){
-        Conta contaOrigem = buscarContaPorNumero(numeroContaOrigem);
-        Conta contaDestino = buscarContaPorNumero(numeroContaDestino);
 
-        if (contaOrigem == null) {
-            throw new ContaInvalidaException(
-                    "Conta de origem não encontrada."
-            );
-        }
-
-        if (contaDestino == null) {
-            throw new ContaInvalidaException(
-                    "Conta de destino não encontrada."
-            );
-        }
-
-        Transferencia transferencia = new Transferencia(
-                contaOrigem,
-                contaDestino,
-                valor
+        Conta contaOrigem = buscarContaObrigatoria(
+                numeroContaOrigem,
+                "Conta origem não encontrada."
         );
 
-        transferencia.executar();
+        Conta contaDestino = buscarContaObrigatoria(
+                numeroContaDestino,
+                "Conta destino não encontrada."
+        );
 
+        new Transferencia(contaOrigem, contaDestino, valor).executar();
     }
-
-
 }
