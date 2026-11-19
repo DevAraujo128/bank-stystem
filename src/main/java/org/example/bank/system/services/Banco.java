@@ -154,4 +154,19 @@ public class Banco {
 
         new Transferencia(contaOrigem, contaDestino, valor).executar();
     }
+
+    public void realizarRendimento(Long numeroConta) {
+        Conta conta = buscarContaObrigatoria(
+                numeroConta,
+                "Conta não encotrada."
+        );
+
+        if (!(conta instanceof ContaPoupanca poupanca)) {
+            throw new ContaInvalidaException(
+                    "O rendimento só pode ser aplicado a uma conta poupança."
+            );
+        }
+
+        poupanca.aplicarRendimento();
+    }
 }

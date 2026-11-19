@@ -1,6 +1,7 @@
 package org.example.bank.system.model;
 
 import org.example.bank.system.exceptions.TransferenciaInvalidaException;
+import org.example.bank.system.exceptions.ValorInvalidoException;
 
 import java.math.BigDecimal;
 
@@ -14,6 +15,25 @@ public class Transferencia extends Transacao {
             BigDecimal valor
     ) {
         super(valor);
+
+        if (contaOrigem == null || contaDestino == null) {
+            throw new TransferenciaInvalidaException(
+                    "As contas de origem e destino são obrigatórias."
+            );
+        }
+
+        if (contaOrigem.equals(contaDestino)) {
+            throw new TransferenciaInvalidaException(
+                    "As contas de origem e destino não podem ser iguais."
+            );
+        }
+
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValorInvalidoException(
+                    "O valor da transfêrencia deve ser maior que zero."
+            );
+        }
+
         this.contaOrigem = contaOrigem;
         this.contaDestino = contaDestino;
     }
@@ -28,19 +48,6 @@ public class Transferencia extends Transacao {
 
     @Override
     protected void executarTransacao() {
-
-        if(contaOrigem == null || contaDestino == null) {
-            throw new TransferenciaInvalidaException(
-                    "As contas de origem e destino são obrigatorias."
-            );
-        }
-
-        if (contaOrigem.equals(contaDestino)) {
-            throw new TransferenciaInvalidaException(
-                    "A conta de origem e destino não podem ser iguais."
-            );
-        }
-
         contaOrigem.sacar(getValor());
         contaDestino.depositar(getValor());
 

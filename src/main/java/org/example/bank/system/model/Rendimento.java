@@ -1,5 +1,7 @@
 package org.example.bank.system.model;
 
+import org.example.bank.system.exceptions.ValorInvalidoException;
+
 import java.math.BigDecimal;
 
 public class Rendimento extends Transacao {
@@ -9,9 +11,9 @@ public class Rendimento extends Transacao {
     public Rendimento(BigDecimal valor, ContaPoupanca conta) {
         super(valor);
 
-        if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(
-                    "O valor do rendimento não pode ser negativo."
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValorInvalidoException(
+                    "O valor do rendimento deve ser maior que zero."
             );
         }
 
@@ -30,10 +32,7 @@ public class Rendimento extends Transacao {
 
     @Override
     protected void executarTransacao() {
-        if (getValor().compareTo(BigDecimal.ZERO) > 0) {
-            conta.depositar(getValor());
-        }
-
+        conta.depositar(getValor());
         conta.adicionarTransacao(this);
     }
 

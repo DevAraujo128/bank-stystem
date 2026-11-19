@@ -1,6 +1,7 @@
 package org.example.bank.system.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class ContaPoupanca extends Conta {
     private BigDecimal rendimento;
@@ -27,12 +28,14 @@ public class ContaPoupanca extends Conta {
 
     public void aplicarRendimento() {
         BigDecimal valorRendimento = getSaldo()
-                .multiply(rendimento);
+                .multiply(rendimento)
+                .setScale(2, RoundingMode.HALF_UP);
 
-        Rendimento transacao = new Rendimento(
-                valorRendimento,
-                this
-        );
+        if (valorRendimento.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+
+        Rendimento transacao = new Rendimento(valorRendimento, this);
 
         transacao.executar();
     }

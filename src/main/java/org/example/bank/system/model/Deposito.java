@@ -3,7 +3,7 @@ package org.example.bank.system.model;
 import java.math.BigDecimal;
 
 public class Deposito extends Transacao {
-    private Conta conta;
+    private final Conta conta;
 
     public Deposito(BigDecimal valor, Conta conta) {
         super(valor);
