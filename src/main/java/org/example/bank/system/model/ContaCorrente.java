@@ -5,7 +5,7 @@ import org.example.bank.system.exceptions.SaldoInsuficienteException;
 import java.math.BigDecimal;
 
 public class ContaCorrente extends Conta {
-    private BigDecimal limite;
+    private final BigDecimal limite;
 
     public ContaCorrente(
             Long numero,
@@ -28,11 +28,15 @@ public class ContaCorrente extends Conta {
         return limite;
     }
 
+    public BigDecimal getSaldoDisponivel() {
+        return getSaldo().add(limite);
+    }
+
     @Override
     public void sacar(BigDecimal valor) {
         validarValorSaque(valor);
 
-        BigDecimal saldoDisponivel = getSaldo().add(limite);
+        BigDecimal saldoDisponivel = getSaldoDisponivel();
 
         if (valor.compareTo(saldoDisponivel) > 0) {
             throw new SaldoInsuficienteException(

@@ -32,13 +32,13 @@ public class Main {
         banco.cadastrarCliente(maria);
 
         // 2. Criação e cadastro das contas
-        Conta contaJoao = new ContaCorrente(
+        ContaCorrente contaJoao = new ContaCorrente(
                 1001L,
                 joao,
                 new BigDecimal("1000.00")
         );
 
-        Conta contaMaria = new ContaCorrente(
+        ContaCorrente contaMaria = new ContaCorrente(
                 1003L,
                 maria,
                 new BigDecimal("500.00")
@@ -80,16 +80,11 @@ public class Main {
                 new BigDecimal("300.00")
         );
 
-        // 6. Exibição dos saldos
-        System.out.println("=== Saldos finais ===");
-        System.out.println("Conta corrente de João: "
-                + MoedaUtils.formatar(contaJoao.getSaldo()));
-        System.out.println("Poupança de João: "
-                + MoedaUtils.formatar(poupancaJoao.getSaldo()));
-        System.out.println("Conta de Maria: "
-                + MoedaUtils.formatar(contaMaria.getSaldo()));
+        System.out.println("Saldo da conta corrente de João " + MoedaUtils.formatar(contaJoao.getSaldo()));
+        System.out.println("Disponivel incluindo limite de João: " + MoedaUtils.formatar(contaJoao.getSaldoDisponivel()));
+        System.out.println("Saldo da conta corrente de Maria " + MoedaUtils.formatar(contaMaria.getSaldo()));
+        System.out.println("Disponivel incluindo limite de Maria: " + MoedaUtils.formatar(contaMaria.getSaldoDisponivel()));
 
-        // 7. Exibição dos históricos
         exibirHistorico("Conta corrente de João", contaJoao);
         exibirHistorico("Poupança de João", poupancaJoao);
         exibirHistorico("Conta de Maria", contaMaria);

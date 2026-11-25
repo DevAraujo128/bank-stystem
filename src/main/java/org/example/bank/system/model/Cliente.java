@@ -9,6 +9,13 @@ public class Cliente {
     private String email;
 
     public Cliente(Long id, String nome, String cpf, String email) {
+
+        if (id == null || id <= 0) {
+            throw new ClienteInvalidoException(
+                    "O ID do cliente deve ser positivo."
+            );
+        }
+
         if (nome == null || nome.isBlank()) {
             throw new ClienteInvalidoException(
                     "Nome é obrigatorio."
@@ -20,6 +27,19 @@ public class Cliente {
                     "CPF é obrigatorio."
             );
         }
+
+        if (!cpf.matches("\\d{11}")) {
+            throw new ClienteInvalidoException(
+                    "O CPF deve conter exatamente 11 dígitos numéricos."
+            );
+        }
+
+        if (cpf.chars().distinct().count() == 1) {
+            throw new ClienteInvalidoException(
+                    "O CPF informado é inválido"
+            );
+        }
+
 
         if (email == null || !email.matches(
                 "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
