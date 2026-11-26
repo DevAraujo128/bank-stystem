@@ -10,18 +10,34 @@ public class Cliente {
 
     public Cliente(Long id, String nome, String cpf, String email) {
 
+        validarId(id);
+        validarNome(nome);
+        validarCpf(cpf);
+        validarEmail(email);
+
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+    }
+
+    private static void validarId(Long id) {
         if (id == null || id <= 0) {
             throw new ClienteInvalidoException(
                     "O ID do cliente deve ser positivo."
             );
         }
+    }
 
+    private static void validarNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new ClienteInvalidoException(
                     "Nome é obrigatorio."
             );
         }
+    }
 
+    private static void validarCpf(String cpf) {
         if (cpf == null || cpf.isBlank()) {
             throw new ClienteInvalidoException(
                     "CPF é obrigatorio."
@@ -39,8 +55,9 @@ public class Cliente {
                     "O CPF informado é inválido"
             );
         }
+    }
 
-
+    private static void validarEmail(String email) {
         if (email == null || !email.matches(
                 "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         )) {
@@ -48,11 +65,6 @@ public class Cliente {
                     "E-mail inválido."
             );
         }
-
-        this.id = id;
-        this.nome = nome;
-        this.cpf = cpf;
-        this.email = email;
     }
 
     public Long getId() {

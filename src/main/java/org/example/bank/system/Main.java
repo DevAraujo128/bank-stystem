@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         Banco banco = new Banco();
 
-        // 1. Cadastro dos clientes
+        // Cadastro dos clientes
         Cliente joao = new Cliente(
                 1L,
                 "João Pedro",
@@ -31,7 +31,7 @@ public class Main {
         banco.cadastrarCliente(joao);
         banco.cadastrarCliente(maria);
 
-        // 2. Criação e cadastro das contas
+        // Criação e cadastro das contas
         ContaCorrente contaJoao = new ContaCorrente(
                 1001L,
                 joao,
@@ -53,6 +53,20 @@ public class Main {
         banco.cadastrarConta(contaJoao);
         banco.cadastrarConta(contaMaria);
         banco.cadastrarConta(poupancaJoao);
+
+        System.out.println("\n=== Clientes cadastrados ===");
+        for (Cliente cliente : banco.listarClientes()) {
+            System.out.println("- " + cliente.getNome());
+        }
+
+        System.out.println("\n=== Contas cadastradas ===");
+        for (Conta conta : banco.listarContas()) {
+            System.out.println(
+                    "- Conta " + conta.getNumero()
+                            + " | Titular: " + conta.getTitular().getNome()
+                            + " | Saldo: " + MoedaUtils.formatar(conta.getSaldo())
+            );
+        }
 
         // 3. Depósitos
         banco.realizarDeposito(
@@ -79,6 +93,15 @@ public class Main {
                 contaMaria.getNumero(),
                 new BigDecimal("300.00")
         );
+
+        System.out.println("\n=== Contas de João ===");
+
+        for (Conta conta : banco.listarContasDoCliente(joao.getCpf())) {
+            System.out.println(
+                    "Conta nº " + conta.getNumero()
+                            + " | Saldo: " + MoedaUtils.formatar(conta.getSaldo())
+            );
+        }
 
         System.out.println("Saldo da conta corrente de João " + MoedaUtils.formatar(contaJoao.getSaldo()));
         System.out.println("Disponivel incluindo limite de João: " + MoedaUtils.formatar(contaJoao.getSaldoDisponivel()));

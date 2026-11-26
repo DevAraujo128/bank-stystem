@@ -37,6 +37,34 @@ public class Banco {
         clientes.add(cliente);
     }
 
+    public List<Cliente> listarClientes() {
+        return List.copyOf(clientes);
+    }
+
+    public List<Conta> listarContas() {
+        return List.copyOf(contas);
+    }
+
+    public List<Conta> listarContasDoCliente(String cpf) {
+        Cliente cliente = buscarClientePorCpf(cpf);
+
+        if (cliente == null) {
+            throw new ClienteInvalidoException(
+                    "Não há cliente cadastro com esse CPF."
+            );
+        }
+
+        List<Conta> contasDoCliente = new ArrayList<>();
+
+        for (Conta conta : contas) {
+            if (conta.getTitular() == cliente) {
+                contasDoCliente.add(conta);
+            }
+        }
+
+        return List.copyOf(contasDoCliente);
+    }
+
     public Cliente buscarClientePorCpf(String cpf) {
 
         if (cpf == null || cpf.isBlank()) {
